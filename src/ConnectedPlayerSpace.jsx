@@ -123,7 +123,7 @@ export function ConnectedTeams() {
     const [{data:p},{data:owned},{data:discover},{data:req}] = await Promise.all([
       supabase.from('profiles').select('id,player_handle,display_name').eq('id',session.user.id).maybeSingle(),
       supabase.from('teams').select('id,team_name,game_code,description,created_at').eq('owner_id',session.user.id).order('created_at',{ascending:false}),
-      supabase.from('teams').select('id,team_name,game_code,description').eq('is_public',true).order('team_name').limit(50),
+      supabase.from('teams').select('id,team_name,game_code,description,owner_id').eq('is_public',true).order('team_name').limit(50),
       supabase.from('team_join_requests').select('id,team_id,requester_id,message,status,created_at').eq('requester_id',session.user.id).order('created_at',{ascending:false})
     ]);
     setProfile(p);setMyTeams(owned||[]);setPublicTeams((discover||[]).filter(t=>t.owner_id!==session.user.id));setRequests(req||[]);
