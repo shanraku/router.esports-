@@ -1,0 +1,105 @@
+# ROUTER.ESPORTS Database Schema & Security Plan
+
+Status: Design draft — not applied to Supabase.
+Target project: `router.esports` (Tokyo project currently visible in the user's screenshot).
+Target region preference for any future replacement project: Mumbai (`ap-south-1`).
+Do not delete or pause the existing Tokyo project while region/access decisions are unresolved.
+
+## 1. Security principles
+
+- Enable Row Level Security (RLS) on every table in the exposed `public` schema.
+- Use `auth.uid()` for ownership checks. Never authorize with user-editable `user_metadata`.
+- Keep admin authorization in trusted server-managed `app_metadata` or a protected role table; never let users assign themselves admin.
+- Never put Supabase service-role or secret keys in browser code.
+- Validate tournament eligibility, team leadership, roster limits, registrations, match results, rewards, and all balance changes on trusted server-side code.
+- Keep paid scrims, payments, and reward payouts disabled until legal/compliance review and a compliant payment provider are ready.
+- No betting, wagers, deposits-to-earn, or guaranteed reward claims.
+- Do not seed fake players, tournaments, match results, leaderboards, rewards, or activity.
+
+## 2. Proposed tables
+
+### Identity and player profiles
+- `profiles`: one row per `auth.users.id`; public display name, unique player handle, avatar path, bio, game identifiers, region, created/updated timestamps. Private contact details should be separated or access-restricted.
+- `profile_games`: a player's game-specific profile/UID and verification state.
+
+### Teams
+- `teams`: team name, unique normalized name, owner/leader, game, description, status, timestamps.
+- `team_members`: team/user membership, role (leader/member), join date; enforce one active team membership per user if product rules require it.
+- `team_invitations`: inviter, invitee, team, status, expiry; only authorized team leaders can invite.
+- `team_join_requests`: applicant, team, status, review metadata; only team leaders can approve/reject.
+
+### Competition operations
+- `tournaments`: title, game, format, rules, registration window, event schedule, capacity, status, visibility, published_by.
+- `tournament_registrations`: tournament, player or team, registration status, timestamps; prevent duplicate registrations.
+- `scrims`: practice session details, schedule, rules, capacity, status and any fee metadata (fees remain disabled until approved).
+- `scrim_registrations`: scrim, player/team, status; prevent duplicate registrations.
+- `matches`: tournament/scrim match, round, scheduled time, participants, status.
+- `match_results`: match, submitted result, evidence reference, verification status, verified_by and audit timestamps. Players may submit evidence but cannot self-verify.
+
+### Rankings and engagement
+- `leaderboard_entries`: competition/season, player/team, verified points and rank inputs. Prefer deriving rankings from verified results rather than trusting client-supplied ranks.
+- `achievements`: admin-defined achievement catalogue.
+- `player_achievements`: earned achievement records, awarded by trusted server-side process.
+- `missions`: admin-defined tasks with rules and active dates.
+- `mission_progress`: per-user progress updated only by trusted, validated events.
+
+### Rewards and money-related records
+- `reward_campaigns`: campaign rules, dates, eligibility and status.
+- `reward_claims`: user claim, review status, decision and timestamps.
+- `reward_ledger`: append-only record of reward adjustments/awards, source reference and actor. Never accept client-written balances; derive balances from ledger entries or trusted server-side transactions.
+- Payment tables/provider integration are intentionally deferred. No real-money collection or payout is enabled in this phase.
+
+### Platform operations
+- `notifications`: recipient, type, safe payload, read timestamp and created timestamp; users can read/update only their own notifications.
+- `support_tickets`: owner, category, subject, message, status and timestamps; only owner and authorized support/admin staff can access.
+- `announcements`: published notice, audience, author and schedule.
+- `reports`: reporter, target type/id, reason, status and moderation metadata.
+- `audit_logs`: append-only security/admin event records, written only by trusted server-side operations.
+
+## 3. RLS policy matrix (design intent)
+
+| Data | Anonymous | Authenticated player | Team leader | Trusted admin/service |
+|---|---|---|---|---|
+| Public profile fields | Read only if profile is public | Read public profiles; edit own allowed fields | Same as player | Moderation access as explicitly granted |
+| Private account fields | No access | Own rows only | Own rows only | Restricted support/admin workflow |
+| Teams and roster | Read public teams | Read public teams; request/join as allowed | Manage own team's roster/invites | Moderation |
+| Invitations/join requests | No access | Own received/sent requests | Own team's requests | Moderation |
+| Tournaments/scrims | Read published items | Register/unregister within rules | Register team if eligible | Create/publish/manage |
+| Match results | Read verified/public results | Submit own evidence; cannot verify | Submit team evidence if authorized | Verify/reject with audit record |
+| Leaderboards | Read published/verified data | No direct rank writes | No direct rank writes | Trusted result pipeline |
+| Achievements/missions | Read active catalogue | Read own progress/awards | No direct award writes | Manage catalogue/award pipeline |
+| Rewards/ledger | No access to private claims | Read own claims/ledger; no balance writes | No balance writes | Trusted reward processing |
+| Notifications | No access | Read/update own notifications | Same | Send through trusted backend |
+| Support tickets | No access | Create/read own tickets | Same | Assigned support/admin access |
+| Announcements | Read published items | Read published items | Same | Create/publish |
+| Reports | No access | Create/read own report status | Same | Moderation |
+| Audit logs | No access | No access | No access | Restricted read; trusted append only |
+
+## 4. Required database constraints and safeguards
+
+- Foreign keys to `auth.users(id)` with deliberate delete behavior.
+- Unique normalized player handles and team names.
+- Check constraints for enumerated statuses and valid capacity/time ranges.
+- Unique constraints to prevent duplicate tournament/scrim registrations and duplicate team membership.
+- Team leader permissions enforced by database/server checks, not hidden UI controls alone.
+- Result verification separated from result submission.
+- Reward ledger append-only for client roles; no direct client update/delete.
+- Audit events for admin actions, moderation, result verification, and reward decisions.
+- Avoid SECURITY DEFINER functions unless a reviewed use case requires them; prefer SECURITY INVOKER and a non-exposed schema for privileged internals.
+- If views are added, use `security_invoker = true` where supported and review grants/RLS.
+- For every UPDATE policy, provide both `USING` and `WITH CHECK`, plus a compatible SELECT policy.
+
+## 5. Implementation order
+
+1. Confirm access to the ROUTER ESPORTS Supabase organisation and choose the project/region to retain.
+2. Review current Supabase documentation and project settings.
+3. Create the initial migration for profiles and core team tables with constraints and RLS.
+4. Test policies using anonymous, player A, player B, team leader, and admin test identities.
+5. Add tournament/scrim registration and result verification.
+6. Add notifications, support, announcements, reports, audit logs.
+7. Add reward catalogue and append-only ledger only after trusted server-side award processing is ready.
+8. Run Supabase security advisors and verify the final policies before enabling frontend actions.
+
+## 6. Current project status
+
+The screenshot supplied by the user shows a project named `router.esports`, project ref `lrtjkxufvzrkecospgvq`, in the Tokyo region (`ap-northeast-1`) under an organisation labelled ROUTER ESPORTS. The connected Supabase integration currently lists only the SUNRAKU organisation and cannot access this project. Therefore this document is a planning artifact only: no SQL, tables, policies, Auth settings, or project changes have been applied.
