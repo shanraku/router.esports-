@@ -78,3 +78,30 @@ footer{border-color:var(--router-line);padding:35px 0;color:#8f8c9a}.footer-bran
 .hero-copy>*{animation:router-rise .75s both}.hero-copy>*:nth-child(2){animation-delay:.08s}.hero-copy>*:nth-child(3){animation-delay:.16s}.hero-copy>*:nth-child(4){animation-delay:.24s}.hero-copy>*:nth-child(5){animation-delay:.32s}.hero-art{animation:router-rise 1s .15s both}
 @media(max-width:760px){.app-shell{padding-left:5%;padding-right:5%}.topbar{min-height:76px}.brand-logo{width:152px;height:54px}.hero{padding:62px 0 64px;min-height:0}.hero h1{font-size:clamp(64px,16vw,94px);letter-spacing:-1.7px;margin:27px 0 20px}.hero-art{height:340px;margin-top:12px}.ring-one{width:260px;height:260px}.ring-two{width:340px;height:200px}.art-core{width:154px;height:154px;font-size:98px}.tag-top{top:23px}.tag-bottom{bottom:28px}.home-discovery{padding:62px 0}.feature-strip{padding:25px 0}}
 @media(prefers-reduced-motion:reduce){.hero-copy>*,.hero-art{animation:none!important}}
+
+
+/* Cinematic competitive ecosystem */
+.arena-showcase{padding:92px 0 54px;border-top:1px solid var(--router-line);border-bottom:1px solid var(--router-line);position:relative;overflow:hidden}
+.arena-showcase:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 82% 45%,rgba(143,109,210,.11),transparent 42%);pointer-events:none}
+.arena-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:36px;margin-bottom:36px;position:relative}
+.arena-heading h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(54px,7vw,88px);line-height:.86;letter-spacing:-1.4px;margin:18px 0 0}
+.arena-heading h2 span{color:var(--router-violet)}
+.arena-heading>p{max-width:390px;color:#a09eaa;font-size:12px;line-height:1.95;margin:0 0 4px}
+.arena-grid{display:grid;grid-template-columns:1.18fr 1fr 1fr;gap:14px;position:relative}
+.arena-card{min-height:360px;padding:20px;border:1px solid var(--router-line);background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.008));display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .35s,border-color .35s,background .35s}
+.arena-card:hover{transform:translateY(-5px);border-color:rgba(182,154,255,.5);background:linear-gradient(145deg,rgba(182,154,255,.09),rgba(255,255,255,.01))}
+.arena-card-number{font-size:9px;letter-spacing:1.8px;color:var(--router-metal)}
+.arena-card-art{height:150px;display:grid;place-items:center;position:relative;margin:12px -5px 10px;background:radial-gradient(ellipse,rgba(182,154,255,.16),transparent 65%)}
+.arena-card-art>span{font-family:'Barlow Condensed',sans-serif;font-size:112px;font-weight:900;color:#e9e2f8;text-shadow:0 0 45px rgba(182,154,255,.25)}
+.arena-card-art>i{position:absolute;right:16%;top:20%;font-style:normal;color:var(--router-metal);font-size:25px}
+.arena-art-one:before,.arena-art-one:after{content:"";position:absolute;width:150px;height:110px;border:1px solid rgba(182,154,255,.35);transform:rotate(-22deg)}
+.arena-art-one:after{transform:rotate(24deg);border-color:rgba(216,201,167,.25)}
+.arena-art-two>span{font-size:92px;color:var(--router-violet)}
+.arena-art-three>span{font-size:100px;color:var(--router-metal)}
+.arena-art-three>i{font-size:11px;letter-spacing:2px;right:12%;top:12%}
+.arena-card h3{font-family:'Barlow Condensed',sans-serif;font-size:25px;letter-spacing:.5px;margin:6px 0 8px}
+.arena-card p{font-size:10px;color:#9997a5;line-height:1.85;margin:0 0 20px;max-width:340px}
+.arena-card>a{margin-top:auto;padding-top:14px;border-top:1px solid var(--router-line);font-size:9px;letter-spacing:1.4px;color:#e5dcf7;text-decoration:none}
+.arena-card>a b{float:right;color:var(--router-violet)}
+.arena-foot{display:flex;justify-content:space-between;gap:15px;margin-top:26px;color:#777482;font-size:8px;letter-spacing:1.7px}
+@media(max-width:760px){.arena-showcase{padding:62px 0 35px}.arena-heading{display:block}.arena-heading h2{font-size:60px}.arena-heading>p{margin-top:20px}.arena-grid{grid-template-columns:1fr}.arena-card{min-height:310px;padding:18px}.arena-card-art{height:130px}.arena-foot{flex-direction:column;line-height:1.8}}
