@@ -1,6 +1,6 @@
 # ROUTER.ESPORTS Database Schema & Security Plan
 
-Status: Design draft — not applied to Supabase.
+Status: Initial player/team schema applied and verified in Supabase; frontend connection is being integrated.
 Target project: `router.esports` (Tokyo project currently visible in the user's screenshot).
 Target region preference for any future replacement project: Mumbai (`ap-south-1`).
 Do not delete or pause the existing Tokyo project while region/access decisions are unresolved.
@@ -93,8 +93,8 @@ Do not delete or pause the existing Tokyo project while region/access decisions 
 
 1. Confirm access to the ROUTER ESPORTS Supabase organisation and choose the project/region to retain.
 2. Review current Supabase documentation and project settings.
-3. Create the initial migration for profiles and core team tables with constraints and RLS.
-4. Test policies using anonymous, player A, player B, team leader, and admin test identities.
+3. Completed: create profiles and core team tables with constraints and RLS.
+4. Pending: test policies using anonymous, player A, player B, team leader, and admin test identities.
 5. Add tournament/scrim registration and result verification.
 6. Add notifications, support, announcements, reports, audit logs.
 7. Add reward catalogue and append-only ledger only after trusted server-side award processing is ready.
@@ -102,4 +102,4 @@ Do not delete or pause the existing Tokyo project while region/access decisions 
 
 ## 6. Current project status
 
-The screenshot supplied by the user shows a project named `router.esports`, project ref `lrtjkxufvzrkecospgvq`, in the Tokyo region (`ap-northeast-1`) under an organisation labelled ROUTER ESPORTS. The connected Supabase integration currently lists only the SUNRAKU organisation and cannot access this project. Therefore this document is a planning artifact only: no SQL, tables, policies, Auth settings, or project changes have been applied.
+The screenshot supplied by the user shows a project named `router.esports`, project ref `lrtjkxufvzrkecospgvq`, in the Tokyo region (`ap-northeast-1`) under an organisation labelled ROUTER ESPORTS. The connected Supabase integration can access this project. The six initial tables (`profiles`, `profile_games`, `teams`, `team_members`, `team_invitations`, `team_join_requests`) have been created with RLS, ownership policies, constraints and explicit grants. A restricted `create_team_with_leader` invoker function creates the team and first leader atomically. Game verification status is not writable by player clients. Security Advisor returned zero findings at the time of verification. The browser integration uses only the public publishable key; no service-role key is present in the frontend. Team invitation acceptance and join-request approval remain disabled pending secure workflow implementation.
