@@ -131,7 +131,7 @@ export function ReelModerationQueue({ session }) {
   const load = useCallback(async () => {
     if (!isModerator) return;
     const [clipResult, reportResult] = await Promise.all([
-      supabase.from('social_clips').select('id,author_id,caption,game_code,status,created_at')
+      supabase.from('social_clips').select('id,author_id,storage_path,caption,game_code,status,created_at')
         .in('status', ['pending', 'rejected', 'hidden']).order('created_at', { ascending: true }).limit(100),
       supabase.from('social_clip_reports').select('id,clip_id,reporter_id,reason,details,status,created_at')
         .in('status', ['pending', 'in_review']).order('created_at', { ascending: true }).limit(100)
@@ -142,7 +142,16 @@ export function ReelModerationQueue({ session }) {
     }
     const clipRows = clipResult.data || [];
     const reportRows = reportResult.data || [];
-    setClips(clipRows);
+    const previewRows = await Promise.all(clipRows.map(async clip => {
+      const result = await supabase.storage.from('router-gameplay-clips')
+        .createSignedUrl(clip.storage_path, 300);
+      return {
+        ...clip,
+        previewUrl: result.data?.signedUrl || null,
+        previewError: result.error?.message || null
+      };
+    }));
+    setClips(previewRows);
     setReports(reportRows);
     const ids = [...new Set([...clipRows.map(c => c.author_id), ...reportRows.map(r => r.reporter_id)])];
     if (ids.length) {
@@ -172,7 +181,13 @@ export function ReelModerationQueue({ session }) {
     {notice && <p className="reels-message" role="status">{notice}</p>}
     <h3>CLIPS AWAITING REVIEW</h3>
     {clips.length ? clips.map(clip => <article className="reel-review-row" key={clip.id}>
-      <div><strong>{clip.caption}</strong><small>{playerName(profiles[clip.author_id])} · {clip.status} · {new Date(clip.created_at).toLocaleString()}</small></div>
+      <div>
+        <strong>{clip.caption}</strong>
+        <small>{playerName(profiles[clip.author_id])} · {clip.status} · {new Date(clip.created_at).toLocaleString()}</small>
+        {clip.previewUrl
+          ? <video className="reel-review-preview" src={clip.previewUrl} controls playsInline preload="metadata"/>
+          : <small role="status">{clip.previewError || 'Private preview unavailable.'}</small>}
+      </div>
       <textarea aria-label="Moderator reason" value={notes[clip.id] || ''} onChange={event => setNotes(current => ({ ...current, [clip.id]: event.target.value }))} placeholder="Review reason (required)" maxLength={1000}/>
       <div className="reel-review-actions">
         {clip.status !== 'pending' && <button disabled={busyId === clip.id} onClick={() => moderate('clip', clip.id, 'restore_clip')}>RESTORE / APPROVE</button>}
