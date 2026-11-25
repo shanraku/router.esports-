@@ -67,3 +67,6 @@ create table storage.objects (
   name text primary key,
   bucket_id text not null
 );
+
+alter table storage.objects enable row level security;
+grant select on storage.objects to authenticated;
