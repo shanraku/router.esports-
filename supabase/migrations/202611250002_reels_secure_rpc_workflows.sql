@@ -111,7 +111,7 @@ begin
   if v_actor is null then
     raise exception 'Authentication required' using errcode = '28000';
   end if;
-  if v_role not in ('admin', 'moderator') then
+  if coalesce(v_role, '') not in ('admin', 'moderator') then
     raise exception 'Moderator permission required' using errcode = '42501';
   end if;
   if p_reason is null or char_length(btrim(p_reason)) < 3 or char_length(p_reason) > 1000 then
