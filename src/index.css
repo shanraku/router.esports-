@@ -144,3 +144,58 @@ footer{border-color:var(--router-line);padding:35px 0;color:#8f8c9a}.footer-bran
 .tournament-drafts{margin-top:22px}.tournament-drafts h3{font-size:.75rem;letter-spacing:.12em}.tournament-drafts>div{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line,rgba(255,255,255,.12));flex-wrap:wrap}.tournament-drafts>div>span:last-child{margin-left:auto;color:var(--muted,#999);font-size:.78rem}
 .tournament-message{padding:16px;border-left:3px solid var(--accent,#c5ff42);background:rgba(255,255,255,.04);line-height:1.5}
 @media(max-width:700px){.tournament-page{width:min(100% - 28px,1180px);padding:42px 0 76px}.tournament-heading{align-items:flex-start;margin:24px 0 28px}.tournament-heading-mark{font-size:5rem}.tournament-trust{grid-template-columns:1fr}.tournament-trust span{border-right:0;border-bottom:1px solid var(--line,rgba(255,255,255,.14));padding:13px 4px}.tournament-trust span:last-child{border-bottom:0}.tournament-grid,.tournament-form{grid-template-columns:1fr}.tournament-form-wide,.tournament-form-actions{grid-column:auto}.tournament-card,.tournament-empty,.tournament-form,.tournament-drafts{padding:18px}.tournament-section-head{align-items:flex-start;flex-direction:column}}
+
+
+/* Social community — Phase 1 */
+.social-page{padding:66px 0 90px;min-height:700px}
+.social-hero{position:relative;padding:44px 0 38px;border-bottom:1px solid var(--router-line);overflow:hidden}
+.social-hero:after{content:"R.";position:absolute;right:4%;top:-42px;font-family:'Barlow Condensed';font-size:clamp(180px,27vw,360px);font-weight:900;line-height:1;color:#b69aff0a;pointer-events:none}
+.social-hero>span,.social-discover-heading>div>span{font-size:9px;letter-spacing:2px;color:var(--router-violet);font-weight:800}
+.social-hero h1{position:relative;z-index:1;font-family:'Barlow Condensed';font-size:clamp(58px,8vw,104px);line-height:.85;letter-spacing:-1px;margin:20px 0}
+.social-hero h1 em{font-style:normal;color:var(--router-violet)}
+.social-hero p{position:relative;z-index:1;max-width:610px;color:#9d9aa8;font-size:13px;line-height:1.9}
+.social-tabs{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:20px 0;border-bottom:1px solid var(--router-line)}
+.social-tabs button,.social-feed-tools button{border:1px solid #ffffff20;background:transparent;color:#9693a1;padding:12px 15px;font:800 9px 'DM Sans';letter-spacing:1px;cursor:pointer}
+.social-tabs button.active,.social-feed-tools button.active{border-color:#b69aff88;color:#e0d4ff;background:#b69aff12}
+.social-tabs>a{margin-left:auto;color:#c9b9ff;font-size:10px;font-weight:800;letter-spacing:.7px}
+.social-composer{display:grid;grid-template-columns:48px 1fr;gap:16px;margin:28px 0 22px;padding:22px;border:1px solid #b69aff40;background:linear-gradient(125deg,#b69aff0c,transparent 70%)}
+.social-composer-mark{width:44px;height:44px;display:grid;place-items:center;border:1px solid #b69aff;color:#e0d4ff;font-family:'Barlow Condensed';font-size:28px;font-weight:900}
+.social-composer form{min-width:0}
+.social-composer label{display:block;margin:2px 0 12px;color:#c8b8f5;font-size:9px;font-weight:800;letter-spacing:1.3px}
+.social-composer textarea{width:100%;min-height:104px;resize:vertical;background:#090a0f;border:1px solid #ffffff20;padding:14px;color:#f4f2f8;font:12px/1.8 'DM Sans';outline:none}
+.social-composer textarea:focus{border-color:#b69aff88}
+.social-compose-bottom{display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap}
+.social-compose-bottom select{background:#101018;border:1px solid #ffffff25;color:#c7c2d2;padding:10px;font:10px 'DM Sans'}
+.social-compose-bottom>span{margin-left:auto;color:#777;font-size:9px}
+.social-compose-bottom .button{padding:12px 14px;font-size:9px}
+.social-feed-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 12px}
+.social-feed-tools>div{display:flex;gap:7px}
+.social-feed-tools>span{font-size:8px;letter-spacing:1px;color:#777;text-align:right}
+.social-feed{display:grid;gap:12px}
+.social-post{border:1px solid #ffffff20;background:linear-gradient(145deg,#ffffff08,transparent);padding:20px 22px}
+.social-post-head{display:flex;align-items:center;gap:12px}
+.social-avatar{width:42px;height:42px;display:grid;place-items:center;flex-shrink:0;border:1px solid #b69aff77;background:#b69aff12;color:#e0d4ff;font-family:'Barlow Condensed';font-size:24px;font-weight:800}
+.social-post-head>div:nth-child(2){display:flex;flex-direction:column;gap:5px;min-width:0}
+.social-post-head strong{font-size:11px;color:#f3f0fa}
+.social-post-head small{font-size:9px;color:#85818f}
+.social-post-head>span{margin-left:auto;color:#c3b1f7;font-size:8px;letter-spacing:1px;text-align:right}
+.social-post>p{margin:18px 0 2px;color:#d0cdd7;font-size:12px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere}
+.social-empty{padding:50px 25px;border:1px dashed #ffffff25;text-align:center}
+.social-empty>span{font-family:'Barlow Condensed';font-size:46px;color:#b69aff}
+.social-empty h2{font-family:'Barlow Condensed';font-size:28px;margin:10px 0}
+.social-empty p{max-width:540px;margin:0 auto;color:#8e8a98;font-size:11px;line-height:1.8}
+.social-empty a{display:inline-block;margin-top:15px;color:#d5c6ff;font-size:10px}
+.social-discover{padding:28px 0}
+.social-discover-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:20px}
+.social-discover-heading h2{font-family:'Barlow Condensed';font-size:32px;margin:8px 0 0}
+.social-discover-heading>small{color:#85818f;font-size:8px;letter-spacing:1px}
+.social-player-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.social-player-card{padding:22px;border:1px solid #ffffff20;background:linear-gradient(145deg,#ffffff08,transparent);min-width:0}
+.social-avatar.large{width:56px;height:56px;font-size:31px}
+.social-player-card h3{font-family:'Barlow Condensed';font-size:24px;margin:17px 0 2px}
+.social-player-card>p{font-size:10px;color:#bca9ef;margin:0 0 10px}
+.social-player-card>small{display:block;min-height:36px;color:#888;font-size:9px;line-height:1.7;overflow-wrap:anywhere}
+.social-player-card .button{margin-top:17px;padding:11px 13px;font-size:9px}
+.social-status{color:#d5c6ff;font-size:10px;margin:16px 0}
+.social-safety{margin-top:28px;padding:14px 16px;border-left:2px solid #b69aff66;background:#b69aff08;color:#888;font-size:9px;line-height:1.8}
+@media(max-width:760px){.social-page{padding:48px 0 65px}.social-hero{padding:30px 0}.social-hero h1{font-size:clamp(54px,14vw,76px)}.social-composer{grid-template-columns:1fr;padding:16px}.social-composer-mark{width:36px;height:36px;font-size:22px}.social-compose-bottom{gap:8px}.social-compose-bottom>span{margin-left:auto}.social-compose-bottom .button{width:100%;justify-content:center}.social-feed-tools{align-items:flex-start;flex-direction:column}.social-feed-tools>span{text-align:left}.social-post{padding:16px}.social-player-grid{grid-template-columns:1fr}.social-discover-heading{align-items:flex-start;flex-direction:column}.social-tabs>a{margin-left:0;width:100%;padding:8px 0}.social-tabs button{flex:1}.social-post-head>span{max-width:95px}}
