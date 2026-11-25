@@ -14,6 +14,10 @@ export default function SocialSpace() {
   const [posts, setPosts] = useState([]);
   const [profiles, setProfiles] = useState([]);
   const [following, setFollowing] = useState([]);
+  const [likes, setLikes] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [commentDrafts, setCommentDrafts] = useState({});
+  const [openComments, setOpenComments] = useState({});
   const [body, setBody] = useState('');
   const [gameCode, setGameCode] = useState('free_fire_max');
   const [busy, setBusy] = useState(false);
@@ -35,18 +39,20 @@ export default function SocialSpace() {
   }, []);
 
   const load = useCallback(async () => {
-    if (!session?.user) { setPosts([]); setProfiles([]); setFollowing([]); return; }
+    if (!session?.user) { setPosts([]); setProfiles([]); setFollowing([]); setLikes([]); setComments([]); return; }
     setMessage('');
-    const [{ data: postRows, error: postError }, { data: followRows, error: followError }, { data: people, error: peopleError }] = await Promise.all([
+    const [{ data: postRows, error: postError }, { data: followRows, error: followError }, { data: people, error: peopleError }, { data: likeRows, error: likeError }, { data: commentRows, error: commentError }] = await Promise.all([
       supabase.from('social_posts').select('id,author_id,body,game_code,created_at').order('created_at', { ascending: false }).limit(60),
       supabase.from('follows').select('following_id').eq('follower_id', session.user.id),
-      supabase.from('profiles').select('id,player_handle,display_name,avatar_path,bio,region').order('created_at', { ascending: false }).limit(80)
+      supabase.from('profiles').select('id,player_handle,display_name,avatar_path,bio,region').order('created_at', { ascending: false }).limit(80),
+      supabase.from('social_post_likes').select('id,post_id,user_id').limit(1000),
+      supabase.from('social_post_comments').select('id,post_id,author_id,body,created_at').order('created_at', { ascending: true }).limit(1000)
     ]);
-    if (postError || followError || peopleError) {
-      setMessage(postError?.message || followError?.message || peopleError?.message || 'Unable to load community.');
+    if (postError || followError || peopleError || likeError || commentError) {
+      setMessage(postError?.message || followError?.message || peopleError?.message || likeError?.message || commentError?.message || 'Unable to load community.');
       return;
     }
-    const ids = [...new Set([...(postRows || []).map(p => p.author_id), ...(people || []).map(p => p.id)])];
+    const ids = [...new Set([...(postRows || []).map(p => p.author_id), ...(people || []).map(p => p.id), ...(commentRows || []).map(c => c.author_id)])];
     let authorRows = people || [];
     if (ids.length) {
       const { data: ownOrPublic } = await supabase.from('profiles').select('id,player_handle,display_name,avatar_path,bio,region').in('id', ids);
@@ -55,6 +61,8 @@ export default function SocialSpace() {
     setPosts(postRows || []);
     setProfiles(authorRows);
     setFollowing((followRows || []).map(f => f.following_id));
+    setLikes(likeRows || []);
+    setComments(commentRows || []);
   }, [session]);
 
   useEffect(() => { if (ready) load(); }, [ready, load]);
@@ -91,6 +99,48 @@ export default function SocialSpace() {
     setBusy(false);
   }
 
+
+  async function toggleLike(postId) {
+    const existing = likes.find(l => l.post_id === postId && l.user_id === session.user.id);
+    setBusy(true); setMessage('');
+    const result = existing
+      ? await supabase.from('social_post_likes').delete().eq('id', existing.id)
+      : await supabase.from('social_post_likes').insert({ post_id: postId, user_id: session.user.id });
+    if (result.error) setMessage(result.error.message);
+    else await load();
+    setBusy(false);
+  }
+
+  async function addComment(e, postId) {
+    e.preventDefault();
+    const text = (commentDrafts[postId] || '').trim();
+    if (!text) return;
+    setBusy(true); setMessage('');
+    const { error } = await supabase.from('social_post_comments').insert({
+      post_id: postId, author_id: session.user.id, body: text
+    });
+    if (error) setMessage(error.message);
+    else {
+      setCommentDrafts(current => ({ ...current, [postId]: '' }));
+      setOpenComments(current => ({ ...current, [postId]: true }));
+      await load();
+    }
+    setBusy(false);
+  }
+
+  async function sharePost(postId) {
+    const url = `${window.location.origin}/community#post-${postId}`;
+    try {
+      if (navigator.share) await navigator.share({ title: 'ROUTER.ESPORTS community post', url });
+      else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        setMessage('Post link copied. Share it with your squad.');
+      } else setMessage(url);
+    } catch (error) {
+      if (error?.name !== 'AbortError') setMessage('Could not share this post on this device.');
+    }
+  }
+
   if (!isSupabaseConfigured) return <main className="social-page"><div className="social-hero"><span>ROUTER / COMMUNITY</span><h1>FIND YOUR<br/><em>PEOPLE.</em></h1><p>Connect the Supabase project to open the community.</p></div></main>;
   if (!ready) return <main className="social-page"><p>Loading community…</p></main>;
   if (!session) return <main className="social-page"><div className="social-hero"><span>ROUTER / COMMUNITY</span><h1>YOUR GAME.<br/><em>YOUR PEOPLE.</em></h1><p>Sign in to follow players, share updates and discover the gaming community.</p><Link className="button primary" to="/login">Sign in to join ↗</Link></div></main>;
@@ -118,6 +168,21 @@ export default function SocialSpace() {
           return <article className="social-post" key={post.id}>
             <div className="social-post-head"><div className="social-avatar">{shortName(author).slice(0,1).toUpperCase()}</div><div><strong>{shortName(author)}</strong><small>@{author?.player_handle || 'player'} · {new Date(post.created_at).toLocaleString()}</small></div><span>{post.game_code?.replaceAll('_',' ').toUpperCase() || 'COMMUNITY'}</span></div>
             <p>{post.body}</p>
+            <div className="social-post-actions">
+              <button className={likes.some(l => l.post_id === post.id && l.user_id === session.user.id) ? 'liked' : ''} disabled={busy} onClick={() => toggleLike(post.id)} aria-label="Like post">♥ <span>{likes.filter(l => l.post_id === post.id).length}</span> LIKE</button>
+              <button onClick={() => setOpenComments(current => ({ ...current, [post.id]: !current[post.id] }))}>▤ <span>{comments.filter(c => c.post_id === post.id).length}</span> COMMENTS</button>
+              <button onClick={() => sharePost(post.id)}>↗ SHARE</button>
+            </div>
+            {openComments[post.id] && <div className="social-comments">
+              {comments.filter(c => c.post_id === post.id).map(comment => {
+                const commenter = profileMap.get(comment.author_id);
+                return <div className="social-comment" key={comment.id}><strong>{shortName(commenter)}</strong><span>{comment.body}</span><small>{new Date(comment.created_at).toLocaleString()}</small></div>;
+              })}
+              <form onSubmit={e => addComment(e, post.id)} className="social-comment-form">
+                <input aria-label="Write a comment" maxLength={1000} value={commentDrafts[post.id] || ''} onChange={e => setCommentDrafts(current => ({ ...current, [post.id]: e.target.value }))} placeholder="Add a thoughtful comment…" />
+                <button className="button primary" disabled={busy || !(commentDrafts[post.id] || '').trim()}>COMMENT ↗</button>
+              </form>
+            </div>}
           </article>;
         }) : <div className="social-empty"><span>R.</span><h2>THE FEED STARTS WITH YOU.</h2><p>{feedMode === 'following' ? 'Follow players to build your personal feed, or switch to Latest to see public community updates.' : 'No community updates have been published yet. Share the first update and invite other players to join.'}</p></div>}
       </section>
