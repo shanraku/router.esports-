@@ -136,3 +136,11 @@ Verification:
 - Security Advisor currently reports one warning: Supabase Auth leaked-password protection is disabled. Enable it in Auth password security settings before public launch.
 - A real end-to-end registration test still requires at least one published tournament and a test player/team account. Do not claim this path has been production-tested yet.
 - Supabase's Data API security guidance recommends explicit grants and RLS together; this migration grants only the required table/column privileges.
+
+
+## Social community foundation (Phase 1)
+- `follows`: authenticated follower/following relationships, unique pair, no self-follow. RLS limits relationship reads to the two involved accounts; inserts require the signed-in follower and a public target profile; only the follower can unfollow.
+- `social_posts`: text-first community updates with optional game tag. RLS permits signed-in users to read public-profile posts and their own posts, create only as themselves, and edit/delete only their own posts.
+- `profiles`: public profile discovery is enabled for public profiles; private profiles remain visible only to their owner under the profile visibility policy.
+- The initial Community page supports Latest feed, Following feed, player discovery, follow/unfollow and text updates. Gameplay video/photo uploads, likes/comments, stories, DMs, blocking/reporting and moderation queues are later milestones; do not treat these as implemented.
+- Media storage is intentionally not enabled in this phase. Before uploads, add strict MIME/size/duration limits, private/quarantined upload handling, moderation and cleanup controls.
