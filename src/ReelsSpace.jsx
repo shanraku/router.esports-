@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from './lib/supabase.js';
 
@@ -39,6 +39,25 @@ export default function ReelsSpace() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [filter, setFilter] = useState('approved');
+  const watchSessionsRef = useRef(new Map());
+
+  function trackClipWatch(clip, event) {
+    if (!session?.user || clip.status !== 'approved' || clip.author_id === session.user.id) return;
+    const video = event.currentTarget;
+    let tracking = watchSessionsRef.current.get(clip.id);
+    if (!tracking) {
+      tracking = { sessionId: crypto.randomUUID(), lastVideoTime: 0, busy: false };
+      watchSessionsRef.current.set(clip.id, tracking);
+    }
+    if (tracking.busy || video.currentTime - tracking.lastVideoTime < 10) return;
+    tracking.lastVideoTime = video.currentTime;
+    tracking.busy = true;
+    supabase.functions.invoke('record-clip-watch', {
+      body: { clip_id: clip.id, session_id: tracking.sessionId }
+    }).then(({ error }) => {
+      if (error) console.warn('Creator watch ping was not accepted:', error.message);
+    }).finally(() => { tracking.busy = false; });
+  }
 
   useEffect(() => {
     if (!file) { setPreviewUrl(''); return; }
@@ -154,7 +173,7 @@ export default function ReelsSpace() {
         const author = profileMap.get(clip.author_id);
         const own = clip.author_id === session.user.id;
         return <article className="reel-card" key={clip.id}>
-          {clip.signedUrl ? <video src={clip.signedUrl} controls playsInline preload="metadata"/> : <div className="reel-video-unavailable">Private media unavailable</div>}
+          {clip.signedUrl ? <video src={clip.signedUrl} controls playsInline preload="metadata" onTimeUpdate={event => trackClipWatch(clip, event)}/> : <div className="reel-video-unavailable">Private media unavailable</div>}
           <div className="reel-card-body"><div className="reel-card-meta"><strong>{playerName(author)}</strong><span>{clip.game_code.replaceAll('_',' ').toUpperCase()}</span></div><p>{clip.caption}</p><small>{new Date(clip.created_at).toLocaleString()} · {Math.round(clip.duration_seconds)}s</small>
             {clip.status === 'pending' && <span className="reel-pending">PENDING REVIEW</span>}
             {clip.status === 'rejected' && <span className="reel-rejected">NOT APPROVED</span>}
