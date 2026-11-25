@@ -129,13 +129,13 @@ export default function SocialSpace() {
   }
 
   async function sharePost(postId) {
-    const url = `${window.location.origin}/community#post-${postId}`;
+    const url = new URL(window.location.href);\n    url.hash = `post-${postId}`;
     try {
-      if (navigator.share) await navigator.share({ title: 'ROUTER.ESPORTS community post', url });
+      if (navigator.share) await navigator.share({ title: 'ROUTER.ESPORTS community post', url: url.toString() });
       else if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(url.toString());
         setMessage('Post link copied. Share it with your squad.');
-      } else setMessage(url);
+      } else setMessage(url.toString());
     } catch (error) {
       if (error?.name !== 'AbortError') setMessage('Could not share this post on this device.');
     }
@@ -165,7 +165,7 @@ export default function SocialSpace() {
       <section className="social-feed">
         {visiblePosts.length ? visiblePosts.map(post => {
           const author = profileMap.get(post.author_id);
-          return <article className="social-post" key={post.id}>
+          return <article className="social-post" id={`post-${post.id}`} key={post.id}>
             <div className="social-post-head"><div className="social-avatar">{shortName(author).slice(0,1).toUpperCase()}</div><div><strong>{shortName(author)}</strong><small>@{author?.player_handle || 'player'} · {new Date(post.created_at).toLocaleString()}</small></div><span>{post.game_code?.replaceAll('_',' ').toUpperCase() || 'COMMUNITY'}</span></div>
             <p>{post.body}</p>
             <div className="social-post-actions">
