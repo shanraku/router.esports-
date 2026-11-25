@@ -151,3 +151,11 @@ Verification:
 - `social_post_comments`: text comments (1–1000 characters) tied to posts with cascade cleanup; signed-in users can comment only on visible posts and delete only their own comments. Reads are limited to visible posts.
 - Community UI now displays like/comment counts, supports like/unlike, threaded-by-post comment panels, and native share or copy-link fallback. Share links preserve the GitHub Pages project path.
 - No comment editing, replies, moderation/report queue or block/mute controls yet. Add moderation and anti-spam controls before opening the community broadly.
+
+
+## Gameplay POV / Reels media (Phase 2 foundation)
+- Private Storage bucket `router-gameplay-clips`, limited to MP4/WebM and 25 MiB per object. Uploads are stored under the authenticated user's UUID folder.
+- `social_clips` stores metadata, caption (1–500 chars), game code, declared duration (0–90 seconds), storage path and moderation status (`pending`, `approved`, `rejected`). RLS allows owners to read/delete their own clips and allows signed-in users to read approved clips only when the creator profile is public. Only pending self-owned rows can be inserted; clients cannot approve or change moderation status.
+- Storage object policies allow uploads/deletes only in the caller's UUID folder. Signed URL reads are allowed for the owner or for approved clips from public profiles.
+- Reels UI performs browser-side MP4/WebM, 25 MiB and 90-second checks, uploads privately, creates 15-minute signed playback URLs, shows own moderation status, and supports deleting own clips.
+- Duration is currently checked by the browser and constrained in the metadata row; a trusted media-processing/moderation service is still required to independently validate media metadata, transcode, scan and approve clips before public launch. No automated approval is enabled.
