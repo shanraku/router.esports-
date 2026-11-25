@@ -103,3 +103,36 @@ Do not delete or pause the existing Tokyo project while region/access decisions 
 ## 6. Current project status
 
 The screenshot supplied by the user shows a project named `router.esports`, project ref `lrtjkxufvzrkecospgvq`, in the Tokyo region (`ap-northeast-1`) under an organisation labelled ROUTER ESPORTS. The connected Supabase integration can access this project. The six initial tables (`profiles`, `profile_games`, `teams`, `team_members`, `team_invitations`, `team_join_requests`) have been created with RLS, ownership policies, constraints and explicit grants. A restricted `create_team_with_leader` invoker function creates the team and first leader atomically. Game verification status is not writable by player clients. Security Advisor returned zero findings at the time of verification. The browser integration uses only the public publishable key; no service-role key is present in the frontend. The `/login`, `/profile`, and `/teams` routes now use Supabase Auth and live database queries. Profile save/game UID entry, team creation with first leader, public team discovery and join-request submission are wired. These UI flows require an authenticated player and a deployed build; no live production deployment has been performed by this change. Team invitation acceptance and join-request approval remain disabled pending secure workflow implementation.
+
+
+## 7. Tournament foundation — applied
+
+The following two tables are now applied to the ROUTER.ESPORTS Tokyo project:
+
+- `tournaments`: event title, game code, solo/team format, description, rules, region, timezone, registration window, start time, draft/published/cancelled/completed status, visibility, creator and creation time.
+- `tournament_registrations`: one player or one team per entry, registering account, registered/cancelled status and timestamp.
+
+Security controls:
+- RLS is enabled on both tables.
+- Public/anonymous users can read only published public tournaments.
+- Authenticated users can create their own drafts and edit/delete only their own drafts.
+- The frontend cannot set a tournament to published; publication is reserved for a trusted admin/server workflow.
+- Registrations require an open published event, matching solo/team format, matching game code and either the player's linked game profile or the team's leader membership.
+- Team leaders can register/cancel their own team entry; players can register/cancel their own solo entry.
+- Partial unique indexes prevent duplicate active player/team entries while allowing re-registration after cancellation.
+- Private teams are allowed to register when the signed-in user is their leader.
+- No capacity limit is currently advertised or enforced; capacity will be added with a transaction-safe trusted registration workflow.
+- No payments, prize payouts, fake tournaments or fake registrations are enabled.
+
+Frontend:
+- `src/TournamentSpace.jsx` adds live public tournament discovery, signed-in tournament draft creation, solo/team registration and cancellation.
+- `/tournaments` now routes to the connected tournament hub.
+- Tournament hub styling is in `src/index.css`.
+- Drafts are not publicly listed and cannot be self-published.
+
+Verification:
+- Both tournament tables are present and have RLS enabled.
+- Expected SELECT/INSERT/UPDATE/DELETE policies were found in `pg_policies`.
+- Security Advisor currently reports one warning: Supabase Auth leaked-password protection is disabled. Enable it in Auth password security settings before public launch.
+- A real end-to-end registration test still requires at least one published tournament and a test player/team account. Do not claim this path has been production-tested yet.
+- Supabase's Data API security guidance recommends explicit grants and RLS together; this migration grants only the required table/column privileges.
