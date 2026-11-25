@@ -144,3 +144,10 @@ Verification:
 - `profiles`: public profile discovery is enabled for public profiles; private profiles remain visible only to their owner under the profile visibility policy.
 - The initial Community page supports Latest feed, Following feed, player discovery, follow/unfollow and text updates. Gameplay video/photo uploads, likes/comments, stories, DMs, blocking/reporting and moderation queues are later milestones; do not treat these as implemented.
 - Media storage is intentionally not enabled in this phase. Before uploads, add strict MIME/size/duration limits, private/quarantined upload handling, moderation and cleanup controls.
+
+
+## Social engagement (Phase 1.1)
+- `social_post_likes`: one like per signed-in user per post; unique post/user pair; users can remove only their own likes. Reads/inserts are restricted to posts visible under the public-profile/own-post rule.
+- `social_post_comments`: text comments (1–1000 characters) tied to posts with cascade cleanup; signed-in users can comment only on visible posts and delete only their own comments. Reads are limited to visible posts.
+- Community UI now displays like/comment counts, supports like/unlike, threaded-by-post comment panels, and native share or copy-link fallback. Share links preserve the GitHub Pages project path.
+- No comment editing, replies, moderation/report queue or block/mute controls yet. Add moderation and anti-spam controls before opening the community broadly.
