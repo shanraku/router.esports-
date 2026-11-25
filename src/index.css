@@ -302,3 +302,37 @@ footer{border-color:var(--router-line);padding:35px 0;color:#8f8c9a}.footer-bran
 .creator-footer-note{margin-top:22px;color:#777382;font-size:9px;line-height:1.8}
 .creator-message{padding:15px;border:1px solid #b69aff44;color:#d9ccff;background:#b69aff0b;font-size:10px;line-height:1.7;margin:16px 0}
 @media(max-width:760px){.creator-page{padding:42px 0 65px}.creator-level-row{grid-template-columns:1fr}.creator-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.creator-missions{grid-template-columns:1fr}.creator-section-head{align-items:flex-start;flex-direction:column}}
+
+
+/* Verified Creator XP, badges and rankings */
+.creator-reward-overview{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.creator-xp-card{padding:22px;border:1px solid #b69aff55;background:linear-gradient(125deg,#b69aff16,#ffffff04)}
+.creator-xp-card>small{display:block;color:#b9a7ed;font-size:8px;font-weight:800;letter-spacing:1.6px}
+.creator-xp-card>strong{display:block;margin:8px 0;font:900 46px 'Barlow Condensed';color:#eee7ff}
+.creator-xp-card>strong span{font:800 14px 'DM Sans';color:#b69aff}
+.creator-xp-card p{color:#9691a3;font-size:10px;line-height:1.8;margin:0 0 12px}
+.creator-claim-button{margin-top:14px;padding:10px 13px;font-size:9px}
+.creator-claimed-note{display:block;margin-top:12px;color:#a9d6b9;font-size:9px;letter-spacing:.6px}
+.creator-badge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.creator-badge{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid #ffffff18;background:#ffffff04;opacity:.62}
+.creator-badge.earned{opacity:1;border-color:#b69aff66;background:#b69aff0d}
+.creator-badge>span{font-size:28px}
+.creator-badge strong{font-size:11px;color:#eee8f8}
+.creator-badge p{font-size:9px;line-height:1.6;color:#928e9c;margin:5px 0}
+.creator-badge small{font-size:8px;letter-spacing:1px;color:#b69aff;font-weight:800}
+.creator-rank-list{margin-top:26px;border:1px solid #ffffff1b;background:#ffffff03}
+.creator-rank-head,.creator-rank-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px}
+.creator-rank-head{color:#a99ad0;font-size:8px;font-weight:800;letter-spacing:1.5px;border-bottom:1px solid #ffffff1a}
+.creator-rank-row{border-bottom:1px solid #ffffff12}
+.creator-rank-row:last-child{border-bottom:0}
+.creator-rank-player{display:flex;align-items:center;gap:15px;min-width:0}
+.creator-rank-player>b{font:900 25px 'Barlow Condensed';color:#b69aff;min-width:30px}
+.creator-rank-player strong{display:block;font-size:11px;color:#eee8f8}
+.creator-rank-player small{display:block;margin-top:4px;color:#8c8796;font-size:9px}
+.creator-rank-xp{font:900 20px 'Barlow Condensed';color:#d9caff;white-space:nowrap}
+.creator-rank-empty{margin-top:28px;padding:45px 20px;border:1px dashed #ffffff28;text-align:center}
+.creator-rank-empty>span{font:900 48px 'Barlow Condensed';color:#b69aff}
+.creator-rank-empty h2{font:900 30px 'Barlow Condensed';margin:8px 0}
+.creator-rank-empty p{max-width:460px;margin:0 auto 18px;color:#9691a3;font-size:10px;line-height:1.8}
+.creator-status{padding:24px 0;color:#a9a3b5;font-size:11px}
+@media(max-width:650px){.creator-reward-overview,.creator-badge-grid{grid-template-columns:1fr}.creator-rank-head,.creator-rank-row{padding:13px}.creator-rank-player{gap:9px}.creator-rank-xp{font-size:17px}}
