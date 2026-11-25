@@ -10,7 +10,7 @@ revoke update, delete on public.social_clip_reports from anon, authenticated;
 revoke update on public.social_clip_comments from anon, authenticated;
 revoke update on public.social_clips from authenticated;
 
-grant select, insert on public.social_clip_moderation_actions to authenticated;
+grant select on public.social_clip_moderation_actions to authenticated;
 grant select, insert on public.social_clip_reports to authenticated;
 grant select, insert, delete on public.social_clip_comments to authenticated;
 
