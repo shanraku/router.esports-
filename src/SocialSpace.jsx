@@ -129,7 +129,8 @@ export default function SocialSpace() {
   }
 
   async function sharePost(postId) {
-    const url = new URL(window.location.href);\n    url.hash = `post-${postId}`;
+    const url = new URL(window.location.href);
+    url.hash = `post-${postId}`;
     try {
       if (navigator.share) await navigator.share({ title: 'ROUTER.ESPORTS community post', url: url.toString() });
       else if (navigator.clipboard?.writeText) {
