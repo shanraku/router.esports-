@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from './lib/supabase.js';
+import { ReelEngagement, ReelModerationQueue } from './ReelEngagement.jsx';
 
 const BUCKET = 'router-gameplay-clips';
 const MAX_BYTES = 25 * 1024 * 1024;
@@ -179,10 +180,12 @@ export default function ReelsSpace() {
             {clip.status === 'rejected' && <span className="reel-rejected">NOT APPROVED</span>}
             {own && <button className="reel-delete" disabled={uploading} onClick={() => deleteClip(clip)}>DELETE MY CLIP</button>}
             {clip.mediaError && <small>{clip.mediaError}</small>}
+            {clip.status === 'approved' && <ReelEngagement clip={clip} session={session} author={author} />}
           </div>
         </article>;
       })}</div> : <div className="reels-empty"><span>R.</span><h2>{filter === 'mine' ? 'YOUR CLIPS WILL LIVE HERE.' : 'THE NEXT CLUTCH IS YOURS.'}</h2><p>{filter === 'mine' ? 'Your uploads and review status will appear here.' : 'Approved community gameplay clips will appear here. Upload yours to get started.'}</p></div>}
     </section>
+    <ReelModerationQueue session={session} />
     {message && <p className="reels-message" role="status">{message}</p>}
     <div className="reels-safety">Keep clips respectful and authentic. Never show account credentials, private chats, OTPs or personal information in gameplay recordings.</div>
   </main>;
