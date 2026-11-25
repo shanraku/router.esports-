@@ -199,3 +199,20 @@ footer{border-color:var(--router-line);padding:35px 0;color:#8f8c9a}.footer-bran
 .social-status{color:#d5c6ff;font-size:10px;margin:16px 0}
 .social-safety{margin-top:28px;padding:14px 16px;border-left:2px solid #b69aff66;background:#b69aff08;color:#888;font-size:9px;line-height:1.8}
 @media(max-width:760px){.social-page{padding:48px 0 65px}.social-hero{padding:30px 0}.social-hero h1{font-size:clamp(54px,14vw,76px)}.social-composer{grid-template-columns:1fr;padding:16px}.social-composer-mark{width:36px;height:36px;font-size:22px}.social-compose-bottom{gap:8px}.social-compose-bottom>span{margin-left:auto}.social-compose-bottom .button{width:100%;justify-content:center}.social-feed-tools{align-items:flex-start;flex-direction:column}.social-feed-tools>span{text-align:left}.social-post{padding:16px}.social-player-grid{grid-template-columns:1fr}.social-discover-heading{align-items:flex-start;flex-direction:column}.social-tabs>a{margin-left:0;width:100%;padding:8px 0}.social-tabs button{flex:1}.social-post-head>span{max-width:95px}}
+
+/* Community engagement controls */
+.social-post-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:18px;padding-top:12px;border-top:1px solid #ffffff15}
+.social-post-actions button{border:1px solid transparent;background:transparent;color:#9994a5;padding:9px 12px;font:800 9px 'DM Sans';letter-spacing:.7px;cursor:pointer}
+.social-post-actions button:hover{border-color:#b69aff55;color:#e0d4ff;background:#b69aff0d}
+.social-post-actions button.liked{color:#ff7eaa}
+.social-post-actions button span{color:#f1edf8;margin:0 3px}
+.social-comments{margin-top:10px;padding:14px;background:#090a0f;border:1px solid #ffffff16}
+.social-comment{display:grid;grid-template-columns:minmax(80px,130px) 1fr;gap:5px 12px;padding:10px 0;border-bottom:1px solid #ffffff10}
+.social-comment strong{font-size:10px;color:#d8caff}
+.social-comment>span{font-size:11px;color:#d0cdd7;overflow-wrap:anywhere;white-space:pre-wrap}
+.social-comment small{grid-column:2;color:#777;font-size:8px}
+.social-comment-form{display:flex;gap:8px;margin-top:13px}
+.social-comment-form input{flex:1;min-width:0;background:#111119;border:1px solid #ffffff20;padding:12px;color:#f4f2f8;font:11px 'DM Sans'}
+.social-comment-form input:focus{outline:none;border-color:#b69aff88}
+.social-comment-form .button{padding:10px 13px;font-size:9px}
+@media(max-width:560px){.social-comment-form{flex-direction:column}.social-comment-form .button{width:100%}.social-post-actions{gap:2px}.social-post-actions button{padding:9px 8px;font-size:8px}}
