@@ -1,0 +1,65 @@
+name: ROUTER.ESPORTS Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feat/reels-social-moderation]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install
+      - name: Build production app
+        run: npm run build
+
+  reels-migration-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: router_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d router_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/router_test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      - name: Prepare isolated Supabase-compatible test schema
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/reels-bootstrap.sql
+      - name: Apply Reels migrations to disposable database
+        run: |
+          for migration in \
+            supabase/migrations/202611250001_reels_engagement_and_moderation.sql \
+            supabase/migrations/202611250002_reels_secure_rpc_workflows.sql \
+            supabase/migrations/202611250003_moderator_private_clip_preview.sql
+          do
+            echo "Testing $migration"
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$migration"
+          done
+      - name: Verify Reels moderation and engagement security
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/reels-security.sql
