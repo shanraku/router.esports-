@@ -70,3 +70,8 @@ create table storage.objects (
 
 alter table storage.objects enable row level security;
 grant select on storage.objects to authenticated;
+
+-- The storage RLS policy evaluates public.social_clips while the test role is
+-- authenticated. Supply the table-level privilege here so RLS can determine
+-- whether the moderator is allowed to read the object.
+grant select on public.social_clips to authenticated;
