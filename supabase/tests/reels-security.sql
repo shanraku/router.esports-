@@ -68,6 +68,10 @@ reset role;
 insert into storage.objects (name, bucket_id)
 values ('11111111-1111-4111-8111-111111111111/test.mp4', 'router-gameplay-clips');
 
+-- The isolated CI database may not include Supabase's default schema-level grant.
+-- Grant schema lookup only; table privileges and row-level security remain enforced.
+grant usage on schema storage to authenticated;
+
 -- The ordinary authenticated user cannot read the private pending clip object.
 select set_config(
   'request.jwt.claims',
