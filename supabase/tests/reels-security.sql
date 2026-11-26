@@ -62,7 +62,9 @@ select public.moderate_social_clip(
 -- Like toggle is available to authenticated users and writes atomically.
 select public.toggle_social_clip_like('22222222-2222-4222-8222-222222222222');
 
--- Private storage preview is restricted to trusted moderators and review states.
+-- Seed the private storage object as the database owner. The authenticated
+-- role must not be granted INSERT on storage.objects just for this test.
+reset role;
 insert into storage.objects (name, bucket_id)
 values ('11111111-1111-4111-8111-111111111111/test.mp4', 'router-gameplay-clips');
 
@@ -72,12 +74,13 @@ select set_config(
   '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated","app_metadata":{}}',
   false
 );
-do $
+set role authenticated;
+do $$
 begin
   if (select count(*) from storage.objects) <> 0 then
     raise exception 'SECURITY TEST FAILED: ordinary user can read private review clip';
   end if;
-end $;
+end $$;
 
 -- A trusted moderator can read the pending clip object for review.
 select set_config(
@@ -85,12 +88,12 @@ select set_config(
   '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated","app_metadata":{"role":"moderator"}}',
   false
 );
-do $
+do $$
 begin
   if (select count(*) from storage.objects) <> 1 then
     raise exception 'SECURITY TEST FAILED: moderator cannot read pending review clip';
   end if;
-end $;
+end $$;
 
 reset role;
 
